@@ -11,14 +11,14 @@
     "android"
   ],
   "author": "getui.com",
-  "engines": [
-    "node >= 0.4.7"
-  ],
+  "engines": {
+    "node": "4.x"
+  },
   "dependencies": {
+    "colour": "^0.7.1",
     "crypto": "0.0.3",
     "protobufjs": "^3.8.2",
     "request": "^2.51.0",
-    "util": "^0.10.3",
-    "zlib": "^1.0.5"
+    "util": "^0.10.3"
   }
 }
