@@ -1,0 +1,24 @@
+{
+  "name": "getui",
+  "version": "0.0.1",
+  "description": "Node wrapper for getui OS SDK API",
+  "main": "index.js",
+  "keywords": [
+    "getui",
+    "sdk",
+    "push",
+    "os",
+    "android"
+  ],
+  "author": "getui.com",
+  "engines": [
+    "node >= 0.4.7"
+  ],
+  "dependencies": {
+    "crypto": "0.0.3",
+    "protobufjs": "^3.8.2",
+    "request": "^2.51.0",
+    "util": "^0.10.3",
+    "zlib": "^1.0.5"
+  }
+}
