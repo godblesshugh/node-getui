@@ -1,3 +1,116 @@
-var GeTui = require('./GT.push');
+'use strict';
+var GlobalConfig = require('./GlobalConfig');
+var APNPayload = require('./payload/APNPayload');
+var SimpleAlertMsg = require('./payload/SimpleAlertMsg');
+var Target = require('./getui/Target');
+var SingleMessage = require('./getui/message/SingleMessage');
+var TransmissionTemplate = require('./getui/template/TransmissionTemplate');
 
-module.exports = GeTui;
+function pushMessageToSingle(clientId, content, alertMessage, badge, sound, ALIAS) {
+	var gt = GlobalConfig.gt
+    var template = createTransmissionTemplate(content, alertMessage, badge, sound);
+    //单推消息体
+    var message = new SingleMessage({
+        isOffline: true,                        //是否离线
+        offlineExpireTime: 3600 * 12 * 1000,    //离线时间
+        data: template                          //设置推送消息类型
+    });
+    //接收方
+    var target = new Target({
+        appId: GlobalConfig.APPID,
+        clientId: clientId
+    });
+
+    if (ALIAS) {
+	    target.setAppId(GlobalConfig.APPID).setAlias(ALIAS);
+    } else {
+	    target.setAppId(GlobalConfig.APPID).setClientId(clientId);
+    }
+    var result = ''
+    return new Promise(function(resolve, reject){
+	    gt.pushMessageToSingle(message, target, function(err, res){
+	        if(err != null){
+	            reject(err)
+	        } else {
+		        resolve(res)
+	        }
+	    })
+    }).then(function(data){
+    	if (data) {
+    		result = data
+    	}
+    }, function(err){
+    	if (err != null && err.exception != null && err.exception instanceof RequestError) {
+    		return new Promise(function(resolve, reject){
+	            //发送异常重传
+	            gt.pushMessageToSingle(message,target,requestId,function(err, res){
+	            	if (err) {
+	            		reject(err)
+	            	} else {
+	            		resolve(res)
+	            	}
+	            });
+            })
+    	} else {
+    		return Promise.reject(err)
+    	}
+    }).then(function(data){
+    	if (data) {
+    		result = data
+    	}
+		return Promise.resolve(result)
+    }, function(err){
+    	return Promise.reject(err)
+    })
+}
+
+function createTransmissionTemplate(content, alertMessage, badge, sound) {
+    var template = new TransmissionTemplate({
+        appId: GlobalConfig.APPID,
+        appKey: GlobalConfig.APPKEY,
+        transmissionType: 1,
+        transmissionContent: content
+    });
+    //iOS推送需要设置的pushInfo字段
+    var payload = new APNPayload();
+    var alertMsg = new SimpleAlertMsg();
+    alertMsg.alertMsg = alertMessage;
+    payload.alertMsg = alertMsg;
+    payload.badge = badge;
+    payload.contentAvailable = 1;
+    payload.category = "ACTIONABLE";
+    payload.sound = sound;
+    payload.customMsg.payload1 = "payload";
+    template.setApnInfo(payload);
+    return template;
+}
+
+/**
+ * 初始化个推的参数
+ * @function  init
+ * @param     {string}  HOST  示例：http://sdk.open.api.igexin.com/apiex.htm
+ * @param     {string}  APPID  示例：JroCkPGgpF6LzFQqqoWlhA
+ * @param     {string}  APPKEY  示例：Mjv706pTKt5cTcjtqaToz8
+ * @param     {string}  MASTERSECRET  示例：uIBtmad7RK706cy5MKdfp3
+ * @returns   {object}  返回一个新的对象，其中包括了所有 module.export.* 的方法和参数
+ */
+exports.init = function(HOST, APPID, APPKEY, MASTERSECRET) {
+	GlobalConfig.init(HOST, APPID, APPKEY, MASTERSECRET)
+
+	/**
+	 * 给单个用户发送推送，优先以 ALIAS 为准（存在 ALIAS 则不会给 clientId 发送）
+	 * @function  pushMessageToSingle
+	 * @param     {string}  clientId  接收推送的 clientId
+	 * @param     {string}  content   推送内容
+	 * @param     {string}  alertMessage   提示内容
+	 * @param     {int}  badge  iOS badge
+	 * @param     {string}  sound  iOS sound
+	 * @param     {string || null}  ALIAS   如果传 ALIAS，则默认 clientId 失效
+	 * @returns   {Promise}  Promise
+	 */
+	module.exports.pushMessageToSingle = function(clientId, content, alertMessage, badge, sound, ALIAS){
+		return pushMessageToSingle(clientId, content, alertMessage, badge, sound, ALIAS)
+	}
+
+	return this
+}
