@@ -80,7 +80,7 @@ function createTransmissionTemplate(content, alertMessage, badge, sound) {
     payload.contentAvailable = 1;
     payload.category = "ACTIONABLE";
     payload.sound = sound;
-    payload.customMsg.payload1 = "payload";
+    payload.customMsg.payload = "payload";
     template.setApnInfo(payload);
     return template;
 }
@@ -111,6 +111,6 @@ exports.init = function(HOST, APPID, APPKEY, MASTERSECRET) {
 	module.exports.pushMessageToSingle = function(clientId, content, alertMessage, badge, sound, ALIAS){
 		return pushMessageToSingle(clientId, content, alertMessage, badge, sound, ALIAS)
 	}
-
+	
 	return this
 }
