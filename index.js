@@ -12,7 +12,7 @@ function pushMessageToSingle(clientId, content, alertMessage, badge, sound, ALIA
     //单推消息体
     var message = new SingleMessage({
         isOffline: true,                        //是否离线
-        offlineExpireTime: 3600 * 12 * 1000,    //离线时间
+        offlineExpireTime: 3600 * 1000 * 24 * 3,    //离线时间，三天
         data: template                          //设置推送消息类型
     });
     //接收方
