@@ -65,24 +65,41 @@ function pushMessageToSingle(clientId, content, alertMessage, badge, sound, ALIA
 }
 
 function createTransmissionTemplate(content, alertMessage, badge, sound) {
-    var template = new TransmissionTemplate({
-        appId: GlobalConfig.APPID,
-        appKey: GlobalConfig.APPKEY,
-        transmissionType: 1,
-        transmissionContent: content
-    });
-    //iOS推送需要设置的pushInfo字段
-    var payload = new APNPayload();
-    var alertMsg = new SimpleAlertMsg();
-    alertMsg.alertMsg = alertMessage;
-    payload.alertMsg = alertMsg;
-    payload.badge = badge;
-    payload.contentAvailable = 1;
-    payload.category = "ACTIONABLE";
-    payload.sound = sound;
-    payload.customMsg.payload = "payload";
-    template.setApnInfo(payload);
-    return template;
+    var template = new TransmissionTemplate();
+    template.setAppId(GlobalConfig.APPID);
+    template.setAppkey(GlobalConfig.APPKEY);
+    template.setTransmissionContent(content);
+    template.setTransmissionType(1);
+    if (alertMessage) {
+        var payload = new APNPayload();
+        payload.badge = badge;
+        payload.contentAvailable = 1;
+        payload.category = "ACTIONABLE";
+        payload.sound = sound;
+        payload.customMsg.payload = "payload";
+        // 简单模式使用
+        var alertMsg = new SimpleAlertMsg();
+        alertMsg.alertMsg = alertMessage;
+        payload.alertMsg = alertMsg;
+        // payload.alertMsg = getDictionaryAlertMsg();
+        template.setApnInfo(payload);
+    }
+    return template
+}
+
+// 字典形式的 alert，暂时不使用
+function getDictionaryAlertMsg() {
+    var alertMsg = new DictionaryAlertMsg();
+    alertMsg.body = "body";
+    alertMsg.actionLocKey = "ActionLockey";
+    alertMsg.locKey = "LocKey";
+    alertMsg.locArgs = "loc-args";
+    alertMsg.launchImage = "launch-image";
+    // IOS8.2以上版本支持
+    alertMsg.title = "Title";
+    alertMsg.titleLocKey = "TitleLocKey";
+    alertMsg.titleLocArgs = "TitleLocArg";
+    return alertMsg;
 }
 
 /**
@@ -111,6 +128,6 @@ exports.init = function(HOST, APPID, APPKEY, MASTERSECRET) {
 	module.exports.pushMessageToSingle = function(clientId, content, alertMessage, badge, sound, ALIAS){
 		return pushMessageToSingle(clientId, content, alertMessage, badge, sound, ALIAS)
 	}
-	
+
 	return this
 }
