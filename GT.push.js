@@ -52,7 +52,10 @@ function getFaster(_this) {
         var mint = 60000;
         
         for (var idx in hosts) {
-            requestHead(hosts[idx]);
+            // 排除掉可能出现的非字符串访问问题。
+            if (hosts[idx] instanceof String) {
+                requestHead(hosts[idx]);
+            }
         }
 		function requestHead(host){
 			var s = Date.now();

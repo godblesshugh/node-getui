@@ -18,7 +18,7 @@
     "colour": "^0.7.1",
     "crypto": "0.0.3",
     "protobufjs": "^3.8.2",
-    "request": "^2.51.0",
+    "request": "^2.70.0",
     "util": "^0.10.3"
   }
 }
