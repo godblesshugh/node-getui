@@ -168,6 +168,7 @@ GeTui.prototype.httpPostJson = function (host, postData, needGzip, callback) {
 //                    console.log("so retry", host, postData);
                     httpManager.post(host, postData, needGzip, callback);
                 } else {
+                    console.error("httpPostJson get:" + response.result);
                     callback(new Error("connect failed"));
                 }
             });
