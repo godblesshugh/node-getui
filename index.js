@@ -1,19 +1,19 @@
-'use strict';
 var GlobalConfig = require('./GlobalConfig');
 var APNPayload = require('./payload/APNPayload');
+var VoIPPayload = require('./payload/VoIPPayload');
 var SimpleAlertMsg = require('./payload/SimpleAlertMsg');
 var Target = require('./getui/Target');
 var SingleMessage = require('./getui/message/SingleMessage');
 var TransmissionTemplate = require('./getui/template/TransmissionTemplate');
 
 function pushMessageToSingle(clientId, content, alertMessage, badge, sound, ALIAS) {
-	var gt = GlobalConfig.gt
+    var gt = GlobalConfig.gt;
     var template = createTransmissionTemplate(content, alertMessage, badge, sound);
     //单推消息体
     var message = new SingleMessage({
-        isOffline: true,                        //是否离线
-        offlineExpireTime: 3600 * 1000 * 24 * 3,    //离线时间，三天
-        data: template                          //设置推送消息类型
+        isOffline: true, //是否离线
+        offlineExpireTime: 3600 * 1000 * 24 * 3, //离线时间，三天
+        data: template //设置推送消息类型
     });
     //接收方
     var target = new Target({
@@ -22,46 +22,104 @@ function pushMessageToSingle(clientId, content, alertMessage, badge, sound, ALIA
     });
 
     if (ALIAS) {
-	    target.setAppId(GlobalConfig.APPID).setAlias(ALIAS);
+        target.setAppId(GlobalConfig.APPID).setAlias(ALIAS);
     } else {
-	    target.setAppId(GlobalConfig.APPID).setClientId(clientId);
+        target.setAppId(GlobalConfig.APPID).setClientId(clientId);
     }
-    var result = ''
-    return new Promise(function(resolve, reject){
-	    gt.pushMessageToSingle(message, target, function(err, res){
-	        if(err != null){
-	            reject(err)
-	        } else {
-		        resolve(res)
-	        }
-	    })
-    }).then(function(data){
-    	if (data) {
-    		result = data
-    	}
-    }, function(err){
-    	if (err != null && err.exception != null && err.exception instanceof RequestError) {
-    		return new Promise(function(resolve, reject){
-	            //发送异常重传
-	            gt.pushMessageToSingle(message,target,requestId,function(err, res){
-	            	if (err) {
-	            		reject(err)
-	            	} else {
-	            		resolve(res)
-	            	}
-	            });
-            })
-    	} else {
-    		return Promise.reject(err)
-    	}
-    }).then(function(data){
-    	if (data) {
-    		result = data
-    	}
-		return Promise.resolve(result)
-    }, function(err){
-    	return Promise.reject(err)
-    })
+    var result = '';
+    return new Promise(function(resolve, reject) {
+        gt.pushMessageToSingle(message, target, function(err, res) {
+            if (!err) {
+                reject(err);
+            } else {
+                resolve(res);
+            }
+        });
+    }).then(function(data) {
+        if (data) {
+            result = data;
+        }
+    }, function(err) {
+        if (!err && !err.exception && err.exception instanceof RequestError) {
+            return new Promise(function(resolve, reject) {
+                //发送异常重传
+                gt.pushMessageToSingle(message, target, requestId, function(err, res) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(res);
+                    }
+                });
+            });
+        } else {
+            return Promise.reject(err);
+        }
+    }).then(function(data) {
+        if (data) {
+            result = data;
+        }
+        return Promise.resolve(result);
+    }, function(err) {
+        return Promise.reject(err);
+    });
+}
+
+function pushMessageToSingleVoIP(clientId, content, alertMessage, badge, sound, ALIAS) {
+    var gt = GlobalConfig.gt;
+    var template = createTransmissionTemplateVoIP(content, alertMessage, badge, sound);
+    //单推消息体
+    var message = new SingleMessage({
+        isOffline: true, //是否离线
+        offlineExpireTime: 3600 * 1000 * 24 * 3, //离线时间，三天
+        data: template //设置推送消息类型
+    });
+    //接收方
+    var target = new Target({
+        appId: GlobalConfig.APPID,
+        clientId: clientId
+    });
+
+    if (ALIAS) {
+        target.setAppId(GlobalConfig.APPID).setAlias(ALIAS);
+    } else {
+        target.setAppId(GlobalConfig.APPID).setClientId(clientId);
+    }
+    var result = '';
+    return new Promise(function(resolve, reject) {
+        gt.pushMessageToSingle(message, target, function(err, res) {
+            if (!err) {
+                reject(err);
+            } else {
+                resolve(res);
+            }
+        });
+    }).then(function(data) {
+        if (data) {
+            result = data;
+        }
+    }, function(err) {
+        if (!err && !err.exception && err.exception instanceof RequestError) {
+            return new Promise(function(resolve, reject) {
+                //发送异常重传
+                gt.pushMessageToSingle(message, target, requestId, function(err, res) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(res);
+                    }
+                });
+            });
+        } else {
+            return Promise.reject(err);
+        }
+    }).then(function(data) {
+        if (data) {
+            result = data;
+        }
+        return Promise.resolve(result);
+    }, function(err) {
+        return Promise.reject(err);
+    });
 }
 
 function createTransmissionTemplate(content, alertMessage, badge, sound) {
@@ -84,7 +142,23 @@ function createTransmissionTemplate(content, alertMessage, badge, sound) {
         // payload.alertMsg = getDictionaryAlertMsg();
         template.setApnInfo(payload);
     }
-    return template
+    return template;
+}
+
+function createTransmissionTemplateVoIP(content, alertMessage, badge, sound) {
+    var template = new TransmissionTemplate();
+    template.setAppId(GlobalConfig.APPID);
+    template.setAppkey(GlobalConfig.APPKEY);
+    template.setTransmissionContent(content);
+    template.setTransmissionType(2);
+    if (alertMessage) {
+        var payload = new VoIPPayload();
+        payload.voIPPayload = JSON.stringify({
+            alert: '支付宝到帐1美元'
+        });
+        template.setApnInfo(payload);
+    }
+    return template;
 }
 
 // 字典形式的 alert，暂时不使用
@@ -112,22 +186,37 @@ function getDictionaryAlertMsg() {
  * @returns   {object}  返回一个新的对象，其中包括了所有 module.export.* 的方法和参数
  */
 exports.init = function(HOST, APPID, APPKEY, MASTERSECRET) {
-	GlobalConfig.init(HOST, APPID, APPKEY, MASTERSECRET)
+    GlobalConfig.init(HOST, APPID, APPKEY, MASTERSECRET);
 
-	/**
-	 * 给单个用户发送推送，优先以 ALIAS 为准（存在 ALIAS 则不会给 clientId 发送）
-	 * @function  pushMessageToSingle
-	 * @param     {string}  clientId  接收推送的 clientId
-	 * @param     {string}  content   推送内容
-	 * @param     {string}  alertMessage   提示内容
-	 * @param     {int}  badge  iOS badge
-	 * @param     {string}  sound  iOS sound
-	 * @param     {string || null}  ALIAS   如果传 ALIAS，则默认 clientId 失效
-	 * @returns   {Promise}  Promise
-	 */
-	module.exports.pushMessageToSingle = function(clientId, content, alertMessage, badge, sound, ALIAS){
-		return pushMessageToSingle(clientId, content, alertMessage, badge, sound, ALIAS)
-	}
+    /**
+     * 给单个用户发送推送，优先以 ALIAS 为准（存在 ALIAS 则不会给 clientId 发送）
+     * @function  pushMessageToSingle
+     * @param     {string}  clientId  接收推送的 clientId
+     * @param     {string}  content   推送内容
+     * @param     {string}  alertMessage   提示内容
+     * @param     {int}  badge  iOS badge
+     * @param     {string}  sound  iOS sound
+     * @param     {string || null}  ALIAS   如果传 ALIAS，则默认 clientId 失效
+     * @returns   {Promise}  Promise
+     */
+    module.exports.pushMessageToSingle = function(clientId, content, alertMessage, badge, sound, ALIAS) {
+        return pushMessageToSingle(clientId, content, alertMessage, badge, sound, ALIAS);
+    };
 
-	return this
-}
+    /**
+     * 给单个用户发送推送，提醒使用VoIP，优先以 ALIAS 为准（存在 ALIAS 则不会给 clientId 发送）
+     * @function  pushMessageToSingleVoIP
+     * @param     {string}  clientId  接收推送的 clientId
+     * @param     {string}  content   推送内容
+     * @param     {string}  alertMessage   提示内容
+     * @param     {int}  badge  iOS badge
+     * @param     {string}  sound  iOS sound
+     * @param     {string || null}  ALIAS   如果传 ALIAS，则默认 clientId 失效
+     * @returns   {Promise}  Promise
+     */
+    module.exports.pushMessageToSingleVoIP = function(clientId, content, alertMessage, badge, sound, ALIAS) {
+        return pushMessageToSingleVoIP(clientId, content, alertMessage, badge, sound, ALIAS);
+    };
+
+    return this;
+};
