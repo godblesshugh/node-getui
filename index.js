@@ -35,11 +35,7 @@ function pushMessageToSingle(clientId, content, alertMessage, badge, sound, ALIA
                 resolve(res);
             }
         });
-    }).then(function(data) {
-        if (data) {
-            result = data;
-        }
-    }, function(err) {
+    }).catch(function(err) {
         if (err && err.exception instanceof RequestError) {
             return new Promise(function(resolve, reject) {
                 //发送异常重传
@@ -54,13 +50,6 @@ function pushMessageToSingle(clientId, content, alertMessage, badge, sound, ALIA
         } else {
             return Promise.reject(err);
         }
-    }).then(function(data) {
-        if (data) {
-            result = data;
-        }
-        return Promise.resolve(result);
-    }, function(err) {
-        return Promise.reject(err);
     });
 }
 
@@ -93,11 +82,7 @@ function pushMessageToSingleVoIP(clientId, content, alertMessage, badge, sound, 
                 resolve(res);
             }
         });
-    }).then(function(data) {
-        if (data) {
-            result = data;
-        }
-    }, function(err) {
+    }).catch(function(err) {
         if (err && err.exception instanceof RequestError) {
             return new Promise(function(resolve, reject) {
                 //发送异常重传
@@ -112,13 +97,6 @@ function pushMessageToSingleVoIP(clientId, content, alertMessage, badge, sound, 
         } else {
             return Promise.reject(err);
         }
-    }).then(function(data) {
-        if (data) {
-            result = data;
-        }
-        return Promise.resolve(result);
-    }, function(err) {
-        return Promise.reject(err);
     });
 }
 
