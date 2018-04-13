@@ -1,24 +1,23 @@
 {
-  "name": "getui",
-  "version": "0.0.1",
-  "description": "Node wrapper for getui OS SDK API",
-  "main": "index.js",
-  "keywords": [
-    "getui",
-    "sdk",
-    "push",
-    "os",
-    "android"
-  ],
-  "author": "getui.com",
-  "engines": {
-    "node": "4.x"
-  },
-  "dependencies": {
-    "colour": "^0.7.1",
-    "crypto": "0.0.3",
-    "protobufjs": "^3.8.2",
-    "request": "^2.70.0",
-    "util": "^0.10.3"
-  }
+    "name": "getui",
+    "version": "0.0.2",
+    "description": "Node wrapper for getui OS SDK API",
+    "main": "index.js",
+    "keywords": [
+        "getui",
+        "sdk",
+        "push",
+        "os",
+        "android"
+    ],
+    "author": "getui.com",
+    "engines": {
+        "node": "4.x"
+    },
+    "dependencies": {
+        "colour": "^0.7.1",
+        "protobufjs": "^3.8.2",
+        "request": "^2.70.0",
+        "util": "^0.10.3"
+    }
 }
