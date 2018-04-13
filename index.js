@@ -40,7 +40,7 @@ function pushMessageToSingle(clientId, content, alertMessage, badge, sound, ALIA
             result = data;
         }
     }, function(err) {
-        if (err !== null && err.exception !== null && err.exception instanceof RequestError) {
+        if (err && err.exception instanceof RequestError) {
             return new Promise(function(resolve, reject) {
                 //发送异常重传
                 gt.pushMessageToSingle(message, target, requestId, function(err, res) {
@@ -98,7 +98,7 @@ function pushMessageToSingleVoIP(clientId, content, alertMessage, badge, sound, 
             result = data;
         }
     }, function(err) {
-        if (err !== null && err.exception !== null && err.exception instanceof RequestError) {
+        if (err && err.exception instanceof RequestError) {
             return new Promise(function(resolve, reject) {
                 //发送异常重传
                 gt.pushMessageToSingle(message, target, requestId, function(err, res) {
