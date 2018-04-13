@@ -29,7 +29,7 @@ function pushMessageToSingle(clientId, content, alertMessage, badge, sound, ALIA
     var result = '';
     return new Promise(function(resolve, reject) {
         gt.pushMessageToSingle(message, target, function(err, res) {
-            if (!err) {
+            if (err) {
                 reject(err);
             } else {
                 resolve(res);
@@ -76,7 +76,7 @@ function pushMessageToSingleVoIP(clientId, content, alertMessage, badge, sound, 
     var result = '';
     return new Promise(function(resolve, reject) {
         gt.pushMessageToSingle(message, target, function(err, res) {
-            if (!err) {
+            if (err) {
                 reject(err);
             } else {
                 resolve(res);
