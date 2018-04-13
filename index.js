@@ -153,9 +153,7 @@ function createTransmissionTemplateVoIP(content, alertMessage, badge, sound) {
     template.setTransmissionType(2);
     if (alertMessage) {
         var payload = new VoIPPayload();
-        payload.voIPPayload = JSON.stringify({
-            alert: '支付宝到帐1美元'
-        });
+        payload.voIPPayload = alertMessage;
         template.setApnInfo(payload);
     }
     return template;
